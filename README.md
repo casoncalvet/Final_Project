@@ -24,7 +24,7 @@
  <br />
 
 
- I decided to focus on classifying opistobranchs by the taxonomic order because members of each order can typically be discened by shape or form, rather than by genetic or non-visual markers. Additionally, the model required around 500-1000 training photos in each class, which was often limited by photo availability, especially at the species level. 
+ I decided to focus on classifying opistobranchs by the taxonomic order because members of each order can typically be discerned by shape or form, rather than by genetic or non-visual markers. Additionally, the model required around 500-1000 training photos in each class, which was often limited by photo availability, especially at the species level. 
 
   <br />
 
