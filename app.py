@@ -4,6 +4,8 @@ from PIL import Image
 import streamlit.components.v1 as components
 import codecs
 
+from img_classification import slug_finder
+
 st.set_page_config(
      page_title="SeaSlugSearcher",
      page_icon="app_images/icon.png",
@@ -26,3 +28,12 @@ st.video("https://www.youtube.com/watch?v=F7V8DRfZBQI")
 
 #components.html(pedro,height=550,scrolling=True)
 
+
+
+uploaded_file = st.file_uploader("Show us your slug!", type="jpg")
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption='Uploaded image', use_column_width=True)
+        st.write("")
+        st.write("Classifying...")
+        label = slug_finder(image, 'model.h5')
