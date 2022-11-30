@@ -22,12 +22,7 @@ st.image(cover, use_column_width=True)
 
 
 
-
-
 #components.html(pedro,height=550,scrolling=True)
-
-
-
 
 
 
@@ -55,6 +50,7 @@ def page2():
 
 def page3():
     st.markdown("# Opistobranch Resources ")
+    st.sidebar.markdown("# Resources ")
     st.write("""
     ###     More Resources for Classification: 
     """)
@@ -71,11 +67,13 @@ def page3():
     </style>
     ''', unsafe_allow_html=True)
 
+
 page_names_to_funcs = {
     "Opistobranch Classifier": main_page,
     "Model Information": page2,
     "More Resources": page3,
 }
 
-selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+selected_page = st.sidebar.selectbox("Menu", page_names_to_funcs.keys())
 page_names_to_funcs[selected_page]()
+st.sidebar.image: st.sidebar.image("App/app_images/side.png", use_column_width=True)

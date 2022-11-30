@@ -192,8 +192,30 @@ def create_model(input_shape, n_classes, optimizer='rmsprop', fine_tune=0):
     
     return model
 ``` 
+ 
 
-### Visualizing Image Classification 
+### Visualizing Fine-Tuned Model Performance
+##### In order to monitor the performance of the model, the following graphs were updated during the training  
+![model2](./App/app_images/model1_loss.png)
 
 
-### Visualizing Model Performance 
+### Adding Data Augmentation to the Model
+``` python 
+BATCH_SIZE = 32
+
+train_generator = ImageDataGenerator(rotation_range=90, 
+                                     horizontal_flip=True, 
+                                     vertical_flip=True,
+                                     validation_split=0.20,
+                                     preprocessing_function=preprocess_input) # VGG16 preprocessing
+
+test_generator = ImageDataGenerator(preprocessing_function=preprocess_input) # VGG16 preprocessing
+
+```
+
+### Visualizing Image Classification
+
+
+#### The final accuracy and loss: 
+
+
