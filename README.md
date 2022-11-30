@@ -62,7 +62,7 @@ img_meta_df[["Width", "Height"]] = pd.DataFrame(img_meta_df["Size"].tolist(), in
 img_meta_df["Aspect Ratio"] = round(img_meta_df["Width"] / img_meta_df["Height"], 2)
 
 ```
-![sizes](./app_images/photo_sizes_ceph.png)
+![sizes](./App/app_images/photo_sizes_ceph.png)
 
 #### Because larger inputs take more time and CPU to evaluate, I chose to begin with an input size of 150, incrementing by 50 until size 300 to optimize the input size.  
 
@@ -71,16 +71,129 @@ img_meta_df["Aspect Ratio"] = round(img_meta_df["Width"] / img_meta_df["Height"]
 ## Determining Color Scale
 I ran models with either input colorscales of "rgb" (original color scale) or "grayscale" (black and white) in order to determine if the model would predict better without the effect of color, since opistobranchs of the same order can come in extremely variable colors and patterns. Depending on the color scale, the architecture of the model changed. 
 
-## Designing Network Architecture 
-Adding an "early stopper" to prevent overfitting: 
+## Designing Network Architecture and Parameters
+I had to decide whether or not to use pretrained weights or to start from scratch with a more simple model. After running several architectures with and without predetermined weights, it became evident that using the VGG16 base model trained on the imagenet dataset was more accurate for this instance. 
+
+#### Loading the VGG16 weights
+``` python
+from tensorflow.keras.applications.vgg16 import VGG16
+
+base_model = VGG16(weights="imagenet", include_top=False, input_shape=(224,224,3))
+base_model.trainable = False ## Not trainable weights
+
+```
+#### Adding layers to the VGG16 base model 
+``` python
+from tensorflow.keras import layers, models
+
+flatten_layer = layers.Flatten()
+dense_layer_1 = layers.Dense(50, activation='relu')
+dense_layer_2 = layers.Dense(20, activation='relu')
+prediction_layer = layers.Dense(5, activation='softmax')
+
+
+model = models.Sequential([
+    base_model,
+    flatten_layer,
+    dense_layer_1,
+    dense_layer_2,
+    prediction_layer
+])
+``` 
+
+
+
+#### Adding an "early stopper" to prevent overfitting: 
 ``` python 
+from keras.callbacks import EarlyStopping
 earlystopping = callbacks.EarlyStopping(monitor ="val_loss", 
                                         mode ="min", patience = 5, 
                                         restore_best_weights = True)
 ``` 
+#### Adding "checkpoints" that save the best weights as the model trains 
+``` python
+from keras.callbacks import ModelCheckpoint 
+tl_checkpoint_1 = ModelCheckpoint(filepath='model_ignore/tl_model_v1.weights.best.hdf5',
+                                  save_best_only=True,
+                                  verbose=1)
+```
+#### Plot the Accuracy and Loss as the Model Trains 
+``` python 
+from livelossplot.inputs.keras import PlotLossesCallback
+plot_loss_1 = PlotLossesCallback()
+```
 
 ## Evaluating the Model 
+#### Generate predictions from the model 
+``` python 
+y_pred=model.predict(X_test)
 
-## Visualizing Performance 
+# reshape output data 
+y_pred=np.argmax(y_pred, axis=1)
+y_test=np.argmax(y_test, axis=1)
 
-## Predicting the Model Output
+#Generate the confusion matrix
+cf_matrix = confusion_matrix(y_test, y_pred)
+
+```
+![sizes](./App/app_images/model1_confusion_matrix_vgg16.png)
+
+#### While the model works much better than previous models without pretrained weights, I am looking for higher accuracy across all classes, so I will fine-tune the current model. 
+
+## Fine-Tuning the Model 
+#### Creating a Model with a VGG16 base, Frozen layers during training, and 20% Dropout
+``` python 
+from keras.models import Model
+
+
+def create_model(input_shape, n_classes, optimizer='rmsprop', fine_tune=0):
+    """
+    Compiles a model integrated with VGG16 pretrained layers
+    
+    input_shape: tuple - the shape of input images (width, height, channels)
+    n_classes: int - number of classes for the output layer
+    optimizer: string - instantiated optimizer to use for training. Defaults to 'RMSProp'
+    fine_tune: int - The number of pre-trained layers to unfreeze.
+                If set to 0, all pretrained layers will freeze during training
+    """
+    
+    # Pretrained convolutional layers are loaded using the Imagenet weights.
+    # Include_top is set to False, in order to exclude the model's fully-connected layers.
+    conv_base = VGG16(include_top=False,
+                     weights='imagenet', 
+                     input_shape=input_shape)
+    
+    # Defines how many layers to freeze during training.
+    # Layers in the convolutional base are switched from trainable to non-trainable
+    # depending on the size of the fine-tuning parameter.
+    if fine_tune > 0:
+        for layer in conv_base.layers[:-fine_tune]:
+            layer.trainable = False
+    else:
+        for layer in conv_base.layers:
+            layer.trainable = False
+
+    # Create a new 'top' of the model (i.e. fully-connected layers).
+    # This is 'bootstrapping' a new top_model onto the pretrained layers.
+    top_model = conv_base.output
+    top_model = Flatten(name="flatten")(top_model)
+    top_model = Dense(4096, activation='relu')(top_model)
+    top_model = Dense(1072, activation='relu')(top_model)
+    top_model = Dropout(0.2)(top_model)
+    output_layer = Dense(n_classes, activation='softmax')(top_model)
+    
+    # Group the convolutional base and new fully-connected layers into a Model object.
+    model = Model(inputs=conv_base.input, outputs=output_layer)
+
+    # Compiles the model for training.
+    model.compile(optimizer=optimizer, 
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    
+    return model
+``` 
+
+### Visualizing Image Classification 
+
+
+### Visualizing Model Performance 

@@ -33,14 +33,11 @@ st.image(cover, use_column_width=True)
 
 def main_page():
     #st.markdown("# Sea Slug Classifier ")
-    st.sidebar.markdown("# Opistobranch Identifier ")
+    st.sidebar.markdown("# Opistobranch Classifier ")
     st.write("""
-    # Opistobranch Identifier! 
+    # Opistobranch Classifier! 
     ##     Upload your sea slug images in order to classify them!
     #### Model classifies members of the orders: Aplysiidae, Cephalaspidea, Nudibranchia, Pleurobranchida, and Runcinida
-    """)
-    st.write("""
-    ###     More Opistobranch Resources: 
     """)
     #uploaded_file = st.file_uploader("Show us your slug!", type="jpg")
     #if uploaded_file is not None:
@@ -49,8 +46,22 @@ def main_page():
     #    st.write("")
     #    st.write("Classifying...")
     #    label = slug_finder(image, 'model.h5')
-    st.markdown("- [OPK Opistobranquis](https://opistobranquis.info/en/)")
-    st.markdown("- [iNaturalist](https://www.inaturalist.org/observations?taxon_id=551391)") 
+
+def page2():
+    st.markdown("# Model Information ")
+    st.sidebar.markdown("# Model Information ")
+
+    
+
+def page3():
+    st.markdown("# Opistobranch Resources ")
+    st.write("""
+    ###     More Resources for Classification: 
+    """)
+    st.markdown("- Opisitobranch Taxonomy and Gallery: [OPK Opistobranquis](https://opistobranquis.info/en/)")
+    st.markdown("- Image Classification available at: [iNaturalist](https://www.inaturalist.org/observations?taxon_id=551391)")
+    st.markdown("- Species List and Classification: [SeaSlugForum](http://www.seaslugforum.net/specieslist.htm)")
+    
 
     st.markdown('''
     <style>
@@ -60,20 +71,10 @@ def main_page():
     </style>
     ''', unsafe_allow_html=True)
 
-def page2():
-    st.markdown("# Model Information ")
-    st.sidebar.markdown("# Model Information ")
-    
-    
-
-def page3():
-    st.markdown("# Page 3 🎉")
-    st.sidebar.markdown("# Page 3 🎉")
-
 page_names_to_funcs = {
-    "Opistobranch Identifier": main_page,
+    "Opistobranch Classifier": main_page,
     "Model Information": page2,
-    "Page 3": page3,
+    "More Resources": page3,
 }
 
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
