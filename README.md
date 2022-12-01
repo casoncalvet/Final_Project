@@ -1,4 +1,4 @@
-# Image Classification using Convolutional Neural Networks to Predict the Taxonomic Order of Sea Slugs Commonly Found Near Barcelona 
+# Image Classification using a Convolutional Neural Network to Predict the Taxonomic Order of Sea Slugs  
 
 #### Muriel Cason Berkenstock 
  <br />
@@ -69,10 +69,10 @@ img_meta_df["Aspect Ratio"] = round(img_meta_df["Width"] / img_meta_df["Height"]
 <br />
 
 ## Determining Color Scale
-I ran models with either input colorscales of "rgb" (original color scale) or "grayscale" (black and white) in order to determine if the model would predict better without the effect of color, since opistobranchs of the same order can come in extremely variable colors and patterns. Depending on the color scale, the architecture of the model changed. 
+I ran models with either input colorscales of "rgb" (original color scale) or "grayscale" (black and white) in order to determine if the model would predict better without the effect of color, since opistobranchs of the same order can come in extremely variable colors and patterns. Depending on the color scale, the architecture of the model changed. Upon using base model architectures VGG16, VGG19, and ResNet50, the model did not require a grayscale conversion.
 
 ## Designing Network Architecture and Parameters
-I had to decide whether or not to use pretrained weights or to start from scratch with a more simple model. After running several architectures with and without predetermined weights, it became evident that using the VGG16 base model trained on the imagenet dataset was more accurate for this instance. 
+I had to decide whether or not to use pretrained weights or to start from scratch with a more simple model. After running several architectures, it became evident that using the VGG16 base model trained on the imagenet dataset was optimal for this instance. 
 
 #### Loading the VGG16 weights
 ``` python
