@@ -48,25 +48,32 @@ def main_page():
     if file is not None:
         im= Image.open(file)
         img= np.asarray(im)
+
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
         image= cv2.resize(img,(224,224))
+
         img= tf.keras.applications.vgg16.preprocess_input(image)
-        img= np.expand_dims(img, 0)
+        
+        img= np.expand_dims(img,0)
         c1.header('Input Image')
         c1.image(im)
         
-      #load weights of the trained model.
         vgg_preds = model.predict(img)
-        #y_classes = to_categorical(vgg_preds,5)
         vgg_pred_classes = np.argmax(vgg_preds, axis=1)
         
         labels = ['Aplysiida', 'Cephalaspidea', 'Nudibranchia', 'Pleurobranchida', 'Runcinida']
         predicted_label = np.array(sorted(labels))[vgg_pred_classes]
+        
         c2.header('Output')
         c2.subheader('Predicted class :')
         
-        c2.write(str(predicted_label))
+        c2.write((str(predicted_label).replace("'", " ").replace("[", " ").replace("]", " ")))
+        
+        
+
     
-        st.write("""#### Model classifies members of the orders: Aplysiidae, Cephalaspidea, Nudibranchia, Pleurobranchida, and Runcinida""")
+        st.caption(""" Model classifies members of the orders: Aplysiidae, Cephalaspidea, Nudibranchia, Pleurobranchida, and Runcinida""") 
 
 
 
