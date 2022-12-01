@@ -26,24 +26,22 @@ cover = Image.open("App/app_images/cova.jpeg")
 st.image(cover, use_column_width=True)
 
 
-#components.html(pedro,height=550,scrolling=True)
-
-
 
 def main_page():
     #st.markdown("# Sea Slug Classifier ")
     st.sidebar.markdown("# Opistobranch Classifier ")
-    st.write("""
-    # Opistobranch Classifier! 
-    ##     Upload your sea slug images in order to classify them!
-    """)
+    st.markdown("<h1 style='text-align: center;'>Opistobranch Classifier! ", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>Upload your sea slug images in order to classify them! ", unsafe_allow_html=True)
+
+
     with st.spinner('Model is being loaded..'):
         model= load_model()
 
     file= st.file_uploader('Drop your slug image here:', label_visibility="visible")
 
     st.set_option('deprecation.showfileUploaderEncoding', False)
-    
+    st.caption(""" Model classifies members of the orders: Aplysiidae, Cephalaspidea, Nudibranchia, Pleurobranchida, and Runcinida""") 
+
     c1, c2= st.columns(2)
     if file is not None:
         im= Image.open(file)
@@ -70,10 +68,7 @@ def main_page():
         
         c2.write((str(predicted_label).replace("'", " ").replace("[", " ").replace("]", " ")))
         
-        
-
     
-        st.caption(""" Model classifies members of the orders: Aplysiidae, Cephalaspidea, Nudibranchia, Pleurobranchida, and Runcinida""") 
 
 
 
@@ -110,5 +105,5 @@ page_names_to_funcs = {
 }
 
 selected_page = st.sidebar.selectbox("Menu", page_names_to_funcs.keys())
-page_names_to_funcs[selected_page]()
-st.sidebar.image: st.sidebar.image("App/app_images/side.png", use_column_width=True)
+page_names_to_funcs[selected_page]() 
+st.sidebar.image: st.sidebar.image("App/app_images/sidebar.png", use_column_width=True)
