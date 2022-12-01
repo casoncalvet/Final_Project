@@ -1,4 +1,4 @@
-# Image Classification using a Convolutional Neural Network to Predict the Taxonomic Order of Sea Slugs  
+# Image Classification using a Convolutional Neural Network (VGG16) to Predict the Taxonomic Order of Opistobranchs  
 
 #### Muriel Cason Berkenstock 
  <br />
@@ -73,7 +73,7 @@ img_meta_df["Aspect Ratio"] = round(img_meta_df["Width"] / img_meta_df["Height"]
 I ran models with either input colorscales of "rgb" (original color scale) or "grayscale" (black and white) in order to determine if the model would predict better without the effect of color, since opistobranchs of the same order can come in extremely variable colors and patterns. Depending on the color scale, the architecture of the model changed. Upon using base model architectures VGG16, VGG19, and ResNet50, the model did not require a grayscale conversion.
 
 ## Designing Network Architecture and Parameters
-I had to decide whether or not to use pretrained weights or to start from scratch with a more simple model. After running several architectures, it became evident that using the VGG16 base model trained on the imagenet dataset was optimal for this instance. Additionally using pretrained weights made the training process much less time consuming. 
+I had to decide whether or not to use pretrained weights or to start from scratch with a more simple model. After running several architectures, it became evident that using the VGG16 base model trained on the imagenet dataset was optimal for this instance. Additionally using pretrained weights made the training process much less time consuming. VGG16 was optimal in my case as I had limited time and CPU. Working with VGG16, I set the input size to that of the VGG16 training imagenet dataset (224, 224, 3).
 
 #### Loading the VGG16 weights
 ``` python
@@ -195,8 +195,6 @@ train_generator = ImageDataGenerator(rotation_range=90,
 test_generator = ImageDataGenerator(preprocessing_function=preprocess_input) # VGG16 preprocessing
 
 ```
-##### Including Data Augmentation decreased model accuracy (Accuraccy: , Loss: ) 
-## Evaluating the Model 
 
 #### Generate predictions from the model 
 ``` python 
@@ -212,5 +210,8 @@ cf_matrix = confusion_matrix(y_test, y_pred)
 ```
 ![sizes](./App/app_images/final_con.png)
 
- #### Final Model Accuracy: 90.45%
+### After using preloaded weights from VGG16, freezing the convolutional layers, fine-tuning the last convolutional layer and the flatten layers, augmenting the data, and adding a dropout layer to mitigate overfitting:
 
+
+![sizes](./App/app_images/final.jpg)
+ #### Final Model Accuracy: 90.45%

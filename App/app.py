@@ -83,16 +83,16 @@ def page2():
     
     st.sidebar.markdown("# Model Information ")
     st.markdown("<h2 style='text-align: center;'>Model Information ", unsafe_allow_html=True)
-    CM = Image.open("App/app_images/model1_confusion_matrix_vgg16.png")
+    CM = Image.open("App/app_images/final_con.png")
     
-    L_A = Image.open("App/app_images/model1_loss.png")
+    L_A = Image.open("App/app_images/final.jpg")
     choices= {
         'Confusion Matrix': CM,
         'Accuracy Loss': L_A
     }
 
     choice = st.sidebar.selectbox("Select Model Chart", list(choices.keys()))
-    
+    st.markdown("<h3 style='text-align: center;'> Model Test Accuracy: 90.45%", unsafe_allow_html=True)
     st.image(choices[choice], use_column_width=True, output_format= 'auto')
 
 
