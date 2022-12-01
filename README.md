@@ -68,11 +68,12 @@ img_meta_df["Aspect Ratio"] = round(img_meta_df["Width"] / img_meta_df["Height"]
 
 <br />
 
+
 ## Determining Color Scale
 I ran models with either input colorscales of "rgb" (original color scale) or "grayscale" (black and white) in order to determine if the model would predict better without the effect of color, since opistobranchs of the same order can come in extremely variable colors and patterns. Depending on the color scale, the architecture of the model changed. Upon using base model architectures VGG16, VGG19, and ResNet50, the model did not require a grayscale conversion.
 
 ## Designing Network Architecture and Parameters
-I had to decide whether or not to use pretrained weights or to start from scratch with a more simple model. After running several architectures, it became evident that using the VGG16 base model trained on the imagenet dataset was optimal for this instance. 
+I had to decide whether or not to use pretrained weights or to start from scratch with a more simple model. After running several architectures, it became evident that using the VGG16 base model trained on the imagenet dataset was optimal for this instance. Additionally using pretrained weights made the training process much less time consuming. 
 
 #### Loading the VGG16 weights
 ``` python
@@ -122,23 +123,10 @@ tl_checkpoint_1 = ModelCheckpoint(filepath='model_ignore/tl_model_v1.weights.bes
 from livelossplot.inputs.keras import PlotLossesCallback
 plot_loss_1 = PlotLossesCallback()
 ```
+##### In order to monitor the performance of the model, the following graphs were updated during the training  
+![model2](./App/app_images/model1_loss.png)
+###### The Model loss in the above figure indicates that the model was being overfitted. 
 
-## Evaluating the Model 
-#### Generate predictions from the model 
-``` python 
-y_pred=model.predict(X_test)
-
-# reshape output data 
-y_pred=np.argmax(y_pred, axis=1)
-y_test=np.argmax(y_test, axis=1)
-
-#Generate the confusion matrix
-cf_matrix = confusion_matrix(y_test, y_pred)
-
-```
-![sizes](./App/app_images/model1_confusion_matrix_vgg16.png)
-
-#### While the model works much better than previous models without pretrained weights, I am looking for higher accuracy across all classes, so I will fine-tune the current model. 
 
 ## Fine-Tuning the Model 
 #### Creating a Model with a VGG16 base, Frozen layers during training, and 20% Dropout
@@ -194,11 +182,6 @@ def create_model(input_shape, n_classes, optimizer='rmsprop', fine_tune=0):
 ``` 
  
 
-### Visualizing Fine-Tuned Model Performance
-##### In order to monitor the performance of the model, the following graphs were updated during the training  
-![model2](./App/app_images/model1_loss.png)
-
-
 ### Adding Data Augmentation to the Model
 ``` python 
 BATCH_SIZE = 32
@@ -212,10 +195,22 @@ train_generator = ImageDataGenerator(rotation_range=90,
 test_generator = ImageDataGenerator(preprocessing_function=preprocess_input) # VGG16 preprocessing
 
 ```
+##### Including Data Augmentation decreased model accuracy (Accuraccy: , Loss: ) 
+## Evaluating the Model 
 
-### Visualizing Image Classification
+#### Generate predictions from the model 
+``` python 
+y_pred=model.predict(X_test)
 
+# reshape output data 
+y_pred=np.argmax(y_pred, axis=1)
+y_test=np.argmax(y_test, axis=1)
 
-#### The final accuracy and loss: 
+#Generate the confusion matrix
+cf_matrix = confusion_matrix(y_test, y_pred)
 
+```
+![sizes](./App/app_images/final_con.png)
+
+ #### Final Model Accuracy: 90.45%
 
